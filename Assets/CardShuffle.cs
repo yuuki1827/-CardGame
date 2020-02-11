@@ -7,21 +7,10 @@ using UnityEngine.U2D;
 /// <summary>
 /// カードをシャッフルするクラス
 /// </summary>
-public class CardShuffle : MonoBehaviour
+public class CardShuffle : MonoBehaviour // cardクラスを継承するのもあり
 {
     /* カードを保持するリスト */
     List<Card> cardList;
-
-    /* カードの種類とカードのGameObjectを一緒に管理 */
-    Dictionary<int, GameObject> caeds;
-
-    /* カードのGameObject(プレハブ) */
-    [SerializeField]
-    private List<GameObject> cardPrefabs;
-
-    /* 場に出ているカードのGameObject(クローン) */
-    [SerializeField]
-    private List<GameObject> fieldCards;
 
     List<int> suits = new List<int>()
     {
@@ -29,12 +18,12 @@ public class CardShuffle : MonoBehaviour
         Card.Heart, Card.Diamond
     };
 
-    void Start()
-    {
-        InitializeCordList();
-        ShuffleCards();
-        //ShowCardName();
-    }
+    //void Start()
+    //{
+    //    InitializeCordList();
+    //    ShuffleCards();
+    //    ShowCardName();
+    //}
 
     /// <summary>
     /// 山札の初期化を行う
@@ -58,35 +47,6 @@ public class CardShuffle : MonoBehaviour
     //    Card joker = new Card(0, 0, true);
     //    cardList.Add(joker);
     //}
-
-    void InitializeCordList()
-    {
-        // 山札を初期化する
-        cardList = new List<Card>();
-
-        caeds = new Dictionary<int, GameObject>();
-        caeds.Add(0, cardPrefabs[0]);
-        caeds.Add(1, cardPrefabs[1]);
-        caeds.Add(2, cardPrefabs[2]);
-        caeds.Add(3, cardPrefabs[3]);
-
-        fieldCards = new List<GameObject>();
-
-        foreach(var card in caeds)
-        {
-            var go = Instantiate(card.Value);
-            fieldCards.Add(go);
-            if(card.Key > 0)
-            {
-                go.transform.position = new Vector2(
-                    fieldCards[card.Key - 1].transform.position.x + 0.25f,
-                    fieldCards[card.Key - 1].transform.position.y
-                );
-            }
-        }
-    }
-
-
 
     ///// <summary>
     ///// コンソールに出力する
