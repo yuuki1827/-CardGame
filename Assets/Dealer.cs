@@ -32,9 +32,19 @@ public class Dealer : MonoBehaviour
         ShowCards();
     }
 
-    public void OnClick()
+    public void Turn()
     {
-        CaredOpen();
+        fieldCards[turnNum].GetComponent<Card>().CardOpen();
+        turnNum++;
+    }
+
+    public void CardReset()
+    {
+        for (int i = 0; i < Card.numbersInSuit; i++)
+        {
+            fieldCards[i].GetComponent<Card>().CardUnit();
+        }
+        turnNum = 0;
     }
 
     /// <summary>
@@ -61,6 +71,8 @@ public class Dealer : MonoBehaviour
         foreach (var card in cards)
         {
             var go = Instantiate(card.Value);
+            go.AddComponent<Card>();
+
             fieldCards.Add(go);
             if (card.Key > 0)
             {

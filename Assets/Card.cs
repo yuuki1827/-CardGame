@@ -6,7 +6,7 @@ using UnityEngine;
 /// カードのデータを保持するクラス
 /// 数字・マーク・ジョーカー判定の3項目を持つ
 /// </summary>
-public abstract class Card
+public class Card : MonoBehaviour
 {
     /* カードのマーク */
     public int suit;
@@ -17,6 +17,8 @@ public abstract class Card
     /* ジョーカー判定 */
     // Jokerの場合、マーク・数字に関係なくJoker扱いとする
     public bool isJoker;
+
+    Transform CardReset;
 
     /* 各マークでの枚数を判定 */
     public const int numbersInSuit = 13;
@@ -36,6 +38,28 @@ public abstract class Card
         this.suit = suit;
         this.number = number;
         this.isJoker = isJoker;
+    }
+
+    /// <summary>
+    /// カードをめくる
+    /// </summary>
+    public void CardOpen()
+    {
+        transform.position = new Vector3(
+            transform.position.x + 10f, transform.position.y, transform.position.z + 0.01f);
+        transform.rotation = Quaternion.Euler(
+            transform.rotation.x + 90f, transform.rotation.y + 180f, transform.rotation.z);
+    }
+
+    void Awake()
+    {
+        CardReset = transform;
+    }
+
+    public void CardUnit()
+    {
+        transform.position = CardReset.position;
+        transform.rotation = CardReset.rotation;
     }
 }
 
