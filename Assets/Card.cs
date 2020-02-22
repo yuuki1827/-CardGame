@@ -43,12 +43,12 @@ public class Card : MonoBehaviour
     /// <summary>
     /// カードをめくる
     /// </summary>
-    public void CardOpen()
+    public void CardOpen(float position)
     {
         transform.position = new Vector3(
-            transform.position.x + 10f, transform.position.y, transform.position.z + 0.01f);
+            transform.position.x + 10f, transform.position.y, position);
         transform.rotation = Quaternion.Euler(
-            transform.rotation.x + 90f, transform.rotation.y + 180f, transform.rotation.z);
+            transform.rotation.x + 90f, transform.rotation.y, transform.rotation.z - 180f);
     }
 
     void Awake()

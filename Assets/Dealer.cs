@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,19 +13,15 @@ public class Dealer : MonoBehaviour
     Dictionary<int, GameObject> cards;
 
     /// <summary>
-    /// カードのGameObject(プレハブ)
-    /// </summary>
-    [SerializeField]
-    private List<GameObject> cardPrefabs;
-
-    /// <summary>
     /// 場に出ているカードのGameObject(クローン)
     /// </summary>
-    [SerializeField]
+    //[SerializeField]
     private List<GameObject> fieldCards;
 
     // 「めくる」ボタンを押された回数
     int turnNum = 0;
+
+    float position = 0;
 
     void Start()
     {
@@ -32,12 +29,19 @@ public class Dealer : MonoBehaviour
         ShowCards();
     }
 
+    /// <summary>
+    /// めくるボタンの処理
+    /// </summary>
     public void Turn()
     {
-        fieldCards[turnNum].GetComponent<Card>().CardOpen();
+        position = position - 0.01f;
+        fieldCards[turnNum].GetComponent<Card>().CardOpen(position);
         turnNum++;
     }
 
+    /// <summary>
+    /// リセットボタンの処理
+    /// </summary>
     public void CardReset()
     {
         for (int i = 0; i < Card.numbersInSuit; i++)
@@ -45,6 +49,7 @@ public class Dealer : MonoBehaviour
             fieldCards[i].GetComponent<Card>().CardUnit();
         }
         turnNum = 0;
+        position = 0;
     }
 
     /// <summary>
@@ -54,9 +59,22 @@ public class Dealer : MonoBehaviour
     {
         // カード情報の初期化
         cards = new Dictionary<int, GameObject>();
-        for (int i = 0; i < Card.numbersInSuit; i++)
+        for (int i = 1; i <= Card.numbersInSuit; i++)
         {
-            cards.Add(i, cardPrefabs[i]);
+            // プレハブのファイルパス+ファイル名
+            string prefabName;
+            // 1桁の場合は「0」を付ける
+            if (i < 10)
+            {
+                prefabName = "Prefab/BackColor_Black/Black_PlayingCards_Club0";
+            }
+            else
+            {
+                prefabName = "Prefab/BackColor_Black/Black_PlayingCards_Club";
+            }
+            // プレハブを読み込む
+            GameObject prefab = (GameObject)Resources.Load(prefabName + i.ToString() + "_00");
+            cards.Add(i, prefab);
         }
     }
 
@@ -76,36 +94,32 @@ public class Dealer : MonoBehaviour
             fieldCards.Add(go);
             if (card.Key > 0)
             {
-                go.transform.position = new Vector3(
-                    fieldCards[card.Key - 1].transform.position.x,
-                    fieldCards[card.Key - 1].transform.position.y,
-                    fieldCards[card.Key - 1].transform.position.z - 0.01f
-                );
+                position = position - 0.01f;
+                go.transform.position = new Vector3(-5f, 0f, position);
+                go.transform.rotation = Quaternion.Euler(-90f, 0f, 180f);
+                go.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
         }
+        ShuffleCards();
+        position = 0;
     }
 
     /// <summary>
-    /// カードをめくる
+    /// カードをシャッフルする
     /// </summary>
-    public void CaredOpen()
+    void ShuffleCards()
     {
-        if (turnNum < Card.numbersInSuit) {
-            fieldCards[turnNum].transform.position = new Vector3(
-                fieldCards[turnNum].transform.position.x + 10f,
-                fieldCards[turnNum].transform.position.y,
-                fieldCards[turnNum].transform.position.z + 0.01f);
-
-            fieldCards[turnNum].transform.rotation = Quaternion.Euler(
-                fieldCards[turnNum].transform.rotation.x + 90f,
-                fieldCards[turnNum].transform.rotation.y + 180f,
-                fieldCards[turnNum].transform.rotation.z);
-
-                turnNum++;
-        }
-        else
+        // 順番にカードデッキの配列にアクセスする
+        for (int i = 0; i < Card.numbersInSuit; i++)
         {
-            return;
+            // アクセスした要素(A)は一時的に変数に格納
+            var temp = fieldCards[i];
+            // 要素を格納する位置を「Random.Range」を使用してランダムに取得
+            int randomIndex = UnityEngine.Random.Range(0, fieldCards.Count);
+            // 移動先の要素(B)を(A)の位置に格納
+            fieldCards[i] = fieldCards[randomIndex];
+            // (B)の位置に(A)を格納
+            fieldCards[randomIndex] = temp;
         }
     }
 }
