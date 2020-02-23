@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.U2D;
+
 
 public class Dealer : MonoBehaviour
 {
@@ -21,7 +18,11 @@ public class Dealer : MonoBehaviour
     // 「めくる」ボタンを押された回数
     int turnNum = 0;
 
+    // カードの位置を格納する変数
     float position = 0;
+
+    // めくったカードの位置を格納する変数
+    float turnPosition = 0;
 
     void Start()
     {
@@ -34,8 +35,8 @@ public class Dealer : MonoBehaviour
     /// </summary>
     public void Turn()
     {
-        position = position - 0.01f;
-        fieldCards[turnNum].GetComponent<Card>().CardOpen(position);
+        turnPosition = turnPosition - 0.01f;
+        fieldCards[turnNum].GetComponent<Card>().CardOpen(turnPosition);
         turnNum++;
     }
 
@@ -49,6 +50,7 @@ public class Dealer : MonoBehaviour
             fieldCards[i].GetComponent<Card>().CardUnit();
         }
         turnNum = 0;
+        turnPosition = 0;
         position = 0;
     }
 
@@ -90,7 +92,6 @@ public class Dealer : MonoBehaviour
         {
             var go = Instantiate(card.Value);
             go.AddComponent<Card>();
-
             fieldCards.Add(go);
             if (card.Key > 0)
             {
@@ -101,7 +102,6 @@ public class Dealer : MonoBehaviour
             }
         }
         ShuffleCards();
-        position = 0;
     }
 
     /// <summary>
