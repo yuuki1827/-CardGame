@@ -12,7 +12,6 @@ public class Dealer : MonoBehaviour
     /// <summary>
     /// 場に出ているカードのGameObject(クローン)
     /// </summary>
-    //[SerializeField]
     private List<GameObject> fieldCards;
 
     // 「めくる」ボタンを押された回数
@@ -35,9 +34,11 @@ public class Dealer : MonoBehaviour
     /// </summary>
     public void Turn()
     {
-        turnPosition = turnPosition - 0.01f;
-        fieldCards[turnNum].GetComponent<Card>().CardOpen(turnPosition);
-        turnNum++;
+        if(turnNum < Card.numbersInSuit) {
+            turnPosition = turnPosition - 0.01f;
+            fieldCards[turnNum].GetComponent<Card>().CardOpen(turnPosition);
+            turnNum++;
+        }
     }
 
     /// <summary>
@@ -45,13 +46,15 @@ public class Dealer : MonoBehaviour
     /// </summary>
     public void CardReset()
     {
-        for (int i = 0; i < Card.numbersInSuit; i++)
-        {
-            fieldCards[i].GetComponent<Card>().CardUnit();
-        }
         turnNum = 0;
         turnPosition = 0;
         position = 0;
+        for (int i = 0; i < Card.numbersInSuit; i++)
+        {
+            position = position - 0.01f;
+            fieldCards[i].GetComponent<Card>().CardSet(position);
+        }
+        ShuffleCards();
     }
 
     /// <summary>
@@ -65,18 +68,20 @@ public class Dealer : MonoBehaviour
         {
             // プレハブのファイルパス+ファイル名
             string prefabName;
+            string prefabPath = "Prefab/BackColor_Black/Black_PlayingCards_Club";
             // 1桁の場合は「0」を付ける
             if (i < 10)
             {
-                prefabName = "Prefab/BackColor_Black/Black_PlayingCards_Club0";
+                prefabName = "0" + i.ToString() + "_00"; 
             }
             else
             {
-                prefabName = "Prefab/BackColor_Black/Black_PlayingCards_Club";
+                prefabName = i.ToString() + "_00";
             }
             // プレハブを読み込む
-            GameObject prefab = (GameObject)Resources.Load(prefabName + i.ToString() + "_00");
+            GameObject prefab = (GameObject)Resources.Load(prefabPath + prefabName);
             cards.Add(i, prefab);
+            Debug.Log(cards);
         }
     }
 
@@ -96,12 +101,11 @@ public class Dealer : MonoBehaviour
             if (card.Key > 0)
             {
                 position = position - 0.01f;
-                go.transform.position = new Vector3(-5f, 0f, position);
-                go.transform.rotation = Quaternion.Euler(-90f, 0f, 180f);
-                go.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                go.GetComponent<Card>().CardSet(position);
             }
         }
         ShuffleCards();
+        Turn();
     }
 
     /// <summary>

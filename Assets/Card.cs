@@ -18,8 +18,6 @@ public class Card : MonoBehaviour
     // Jokerの場合、マーク・数字に関係なくJoker扱いとする
     public bool isJoker;
 
-    Transform CardReset;
-
     /* 各マークでの枚数を判定 */
     public const int numbersInSuit = 13;
 
@@ -41,8 +39,9 @@ public class Card : MonoBehaviour
     }
 
     /// <summary>
-    /// カードをめくる
+    /// カードをめくる位置を設定する
     /// </summary>
+    /// <param name="position">奥行きのポジション</param>
     public void CardOpen(float position)
     {
         transform.position = new Vector3(
@@ -51,15 +50,15 @@ public class Card : MonoBehaviour
             transform.rotation.x + 90f, transform.rotation.y, transform.rotation.z - 180f);
     }
 
-    void Awake()
+    /// <summary>
+    /// カードをセットする位置を設定する
+    /// </summary>
+    /// <param name="position">奥行きのポジション</param>
+    public void CardSet(float position)
     {
-        CardReset = transform;
-    }
-
-    public void CardUnit()
-    {
-        transform.position = CardReset.position;
-        transform.rotation = CardReset.rotation;
+        transform.position = new Vector3(-5f, 0f, position);
+        transform.rotation = Quaternion.Euler(-90f, 0f, 180f);
+        transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
     }
 }
 
