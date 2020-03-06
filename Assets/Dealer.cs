@@ -7,12 +7,12 @@ public class Dealer : MonoBehaviour
     /// <summary>
     /// カードの種類とカードのGameObjectを一緒に管理
     /// </summary>
-    Dictionary<int, GameObject> cards;
+    public Dictionary<int, GameObject> cards;
 
     /// <summary>
     /// 場に出ているカードのGameObject(クローン)
     /// </summary>
-    private List<GameObject> fieldCards;
+    public List<GameObject> fieldCards;
 
     // 「めくる」ボタンを押された回数
     int turnNum = 0;
@@ -23,10 +23,18 @@ public class Dealer : MonoBehaviour
     // めくったカードの位置を格納する変数
     float turnPosition = 0;
 
+    // プレハブ名
+    string prefabName;
+    // ファイルパス
+    string prefabPath = "Prefab/BackColor_Black/Black_PlayingCards_Club";
+
+    GameController gameController = new GameController();
+
     void Start()
     {
         InitializeCard();
         ShowCards();
+        gameController.ShowCards();
     }
 
     /// <summary>
@@ -55,6 +63,7 @@ public class Dealer : MonoBehaviour
             fieldCards[i].GetComponent<Card>().CardSet(position);
         }
         ShuffleCards();
+        Turn();
     }
 
     /// <summary>
@@ -66,11 +75,7 @@ public class Dealer : MonoBehaviour
         cards = new Dictionary<int, GameObject>();
         for (int i = 1; i <= Card.numbersInSuit; i++)
         {
-            // プレハブのファイルパス+ファイル名
-            string prefabName;
-            string prefabPath = "Prefab/BackColor_Black/Black_PlayingCards_Club";
-            // 1桁の場合は「0」を付ける
-            if (i < 10)
+            if (i < 10)  // 1桁の場合は「0」を付ける
             {
                 prefabName = "0" + i.ToString() + "_00"; 
             }
@@ -79,16 +84,15 @@ public class Dealer : MonoBehaviour
                 prefabName = i.ToString() + "_00";
             }
             // プレハブを読み込む
-            GameObject prefab = (GameObject)Resources.Load(prefabPath + prefabName);
+            var prefab = (GameObject)Resources.Load(prefabPath + prefabName);
             cards.Add(i, prefab);
-            Debug.Log(cards);
         }
     }
 
     /// <summary>
     /// 山札を場に出す
     /// </summary>
-    void ShowCards()
+    public virtual void ShowCards()
     {
         fieldCards = new List<GameObject>();
 
