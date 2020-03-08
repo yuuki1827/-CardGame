@@ -14,6 +14,9 @@ public class Dealer : MonoBehaviour
     /// </summary>
     public List<GameObject> fieldCards;
 
+    // カードの代わりとなる１〜１３の数
+    static List<int> numbers = new List<int>();
+
     // 「めくる」ボタンを押された回数
     int turnNum = 0;
 
@@ -28,13 +31,10 @@ public class Dealer : MonoBehaviour
     // ファイルパス
     string prefabPath = "Prefab/BackColor_Black/Black_PlayingCards_Club";
 
-    GameController gameController = new GameController();
-
     void Start()
     {
         InitializeCard();
         ShowCards();
-        gameController.ShowCards();
     }
 
     /// <summary>
@@ -44,7 +44,8 @@ public class Dealer : MonoBehaviour
     {
         if(turnNum < Card.numbersInSuit) {
             turnPosition = turnPosition - 0.01f;
-            fieldCards[turnNum].GetComponent<Card>().CardOpen(turnPosition);
+            Debug.Log(numbers[turnNum]);
+            fieldCards[numbers[turnNum] - 1].GetComponent<Card>().CardOpen(turnPosition);
             turnNum++;
         }
     }
@@ -62,8 +63,47 @@ public class Dealer : MonoBehaviour
             position = position - 0.01f;
             fieldCards[i].GetComponent<Card>().CardSet(position);
         }
-        ShuffleCards();
+        //ShuffleCards();
+        Shuffle();
         Turn();
+    }
+
+    /// <summary>
+    /// Highボタンの処理
+    /// </summary>
+    public void High()
+    {
+        if (turnNum < Card.numbersInSuit)
+        {
+            // Highボタンがおされた場合
+            int high = 1;
+            Debug.Log(numbers[turnNum]);
+            Debug.Log("high!");
+            GameController.GameMain(numbers, turnNum, high);
+
+            turnPosition = turnPosition - 0.01f;
+            fieldCards[numbers[turnNum] - 1].GetComponent<Card>().CardOpen(turnPosition);
+            turnNum++;
+        }
+    }
+
+    /// <summary>
+    /// Lowボタンの処理
+    /// </summary>
+    public void Low()
+    {
+        if (turnNum < Card.numbersInSuit)
+        {
+            // Lowボタンがおされた場合
+            int Low = 2;
+            Debug.Log(numbers[turnNum]);
+            Debug.Log("Low!");
+            GameController.GameMain(numbers, turnNum, Low);
+
+            turnPosition = turnPosition - 0.01f;
+            fieldCards[numbers[turnNum] - 1].GetComponent<Card>().CardOpen(turnPosition);
+            turnNum++;
+        }
     }
 
     /// <summary>
@@ -86,13 +126,14 @@ public class Dealer : MonoBehaviour
             // プレハブを読み込む
             var prefab = (GameObject)Resources.Load(prefabPath + prefabName);
             cards.Add(i, prefab);
+            numbers.Add(i);
         }
     }
 
     /// <summary>
     /// 山札を場に出す
     /// </summary>
-    public virtual void ShowCards()
+    void ShowCards()
     {
         fieldCards = new List<GameObject>();
 
@@ -108,26 +149,43 @@ public class Dealer : MonoBehaviour
                 go.GetComponent<Card>().CardSet(position);
             }
         }
-        ShuffleCards();
+        //ShuffleCards();
+        Shuffle();
         Turn();
     }
 
     /// <summary>
     /// カードをシャッフルする
     /// </summary>
-    void ShuffleCards()
+    //void ShuffleCards()
+    //{
+    //    // 順番にカードデッキの配列にアクセスする
+    //    for (int i = 0; i < Card.numbersInSuit; i++)
+    //    {
+    //        // アクセスした要素(A)は一時的に変数に格納
+    //        var temp = fieldCards[i];
+    //        // 要素を格納する位置を「Random.Range」を使用してランダムに取得
+    //        int randomIndex = UnityEngine.Random.Range(0, fieldCards.Count);
+    //        // 移動先の要素(B)を(A)の位置に格納
+    //        fieldCards[i] = fieldCards[randomIndex];
+    //        // (B)の位置に(A)を格納
+    //        fieldCards[randomIndex] = temp;
+    //    }
+    //}
+
+    void Shuffle()
     {
         // 順番にカードデッキの配列にアクセスする
         for (int i = 0; i < Card.numbersInSuit; i++)
         {
             // アクセスした要素(A)は一時的に変数に格納
-            var temp = fieldCards[i];
+            var temp = numbers[i];
             // 要素を格納する位置を「Random.Range」を使用してランダムに取得
-            int randomIndex = UnityEngine.Random.Range(0, fieldCards.Count);
+            int randomIndex = UnityEngine.Random.Range(0, numbers.Count);
             // 移動先の要素(B)を(A)の位置に格納
-            fieldCards[i] = fieldCards[randomIndex];
+            numbers[i] = numbers[randomIndex];
             // (B)の位置に(A)を格納
-            fieldCards[randomIndex] = temp;
+            numbers[randomIndex] = temp;
         }
     }
 }
